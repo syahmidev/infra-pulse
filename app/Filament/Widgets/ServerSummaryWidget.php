@@ -49,7 +49,8 @@ class ServerSummaryWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('latestMetric.cpu_usage')
                     ->label('CPU %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
@@ -58,7 +59,8 @@ class ServerSummaryWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('latestMetric.memory_usage')
                     ->label('Mem %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
@@ -67,7 +69,8 @@ class ServerSummaryWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('latestMetric.disk_usage')
                     ->label('Disk %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->color(fn ($state): string => match (true) {
                         $state >= 85 => 'warning',
                         default      => 'success',
@@ -75,7 +78,8 @@ class ServerSummaryWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('latestMetric.response_time')
                     ->label('Response (ms)')
                     ->suffix('ms')
-                    ->numeric(decimals: 0)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->color(fn ($state): string => match (true) {
                         $state >= 1000 => 'warning',
                         default        => 'success',

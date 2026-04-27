@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Alert;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestAlertsWidget extends BaseWidget
@@ -46,7 +47,7 @@ class LatestAlertsWidget extends BaseWidget
                     ->limit(80),
             ])
             ->actions([
-                Tables\Actions\Action::make('markRead')
+                Action::make('markRead')
                     ->label('')
                     ->icon('heroicon-o-check')
                     ->tooltip('Mark as read')
