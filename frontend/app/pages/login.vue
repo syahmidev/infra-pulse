@@ -48,7 +48,7 @@ definePageMeta({ layout: false })
 const { login } = useAuth()
 const router    = useRouter()
 
-const form     = reactive({ email: '', password: '' })
+const form     = reactive({ email: 'admin@infrapulse.local', password: 'password' })
 const loading  = ref(false)
 const errorMsg = ref('')
 

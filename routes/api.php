@@ -15,15 +15,14 @@ Route::post('/login', function (Request $request) {
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    $request->session()->regenerate();
+    $user  = Auth::user();
+    $token = $user->createToken('frontend')->plainTextToken;
 
-    return response()->json(['user' => Auth::user()]);
+    return response()->json(['token' => $token, 'user' => $user]);
 });
 
 Route::post('/logout', function (Request $request) {
-    Auth::guard('web')->logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+    $request->user()->currentAccessToken()->delete();
     return response()->json(['message' => 'Logged out']);
 })->middleware('auth:sanctum');
 

@@ -9,25 +9,26 @@ export function useEcho() {
     if (!import.meta.client || echoInstance) return
 
     const config = useRuntimeConfig()
+    const token  = useCookie('auth_token').value
 
     // @ts-ignore — pusher-js needs window.Pusher
     window.Pusher = Pusher
 
     echoInstance = new Echo({
-      broadcaster:      'pusher',
-      key:              config.public.reverbKey,
-      wsHost:           config.public.reverbHost,
-      wsPort:           Number(config.public.reverbPort),
-      wssPort:          Number(config.public.reverbPort),
-      forceTLS:         config.public.reverbScheme === 'https',
-      disableStats:     true,
+      broadcaster:       'pusher',
+      key:               config.public.reverbKey,
+      wsHost:            config.public.reverbHost,
+      wsPort:            Number(config.public.reverbPort),
+      wssPort:           Number(config.public.reverbPort),
+      forceTLS:          config.public.reverbScheme === 'https',
+      disableStats:      true,
       enabledTransports: ['ws', 'wss'],
-      authEndpoint:     `${config.public.apiUrl}/broadcasting/auth`,
+      authEndpoint:      `${config.public.apiUrl}/broadcasting/auth`,
       auth: {
         headers: {
+          'Authorization':    token ? `Bearer ${token}` : '',
           'X-Requested-With': 'XMLHttpRequest',
         },
-        withCredentials: true,
       },
     })
 

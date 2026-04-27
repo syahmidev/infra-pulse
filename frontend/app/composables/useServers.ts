@@ -32,13 +32,10 @@ export function useServers() {
   async function fetchServers() {
     loading.value = true
     error.value   = null
+    const { authHeaders } = useAuth()
     try {
       const data = await $fetch<Server[]>(`${config.public.apiUrl}/api/servers`, {
-        credentials: 'include',
-        headers: {
-          'Accept':            'application/json',
-          'X-Requested-With':  'XMLHttpRequest',
-        },
+        headers: authHeaders(),
       })
       servers.value = data
     } catch (e: any) {
