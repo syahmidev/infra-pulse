@@ -4,7 +4,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiUrl:      process.env.NUXT_PUBLIC_API_URL      ?? 'http://infra-pulse.test',
+      apiUrl:      process.env.NUXT_PUBLIC_API_URL      ?? 'https://infra-pulse.test',
       reverbHost:  process.env.NUXT_PUBLIC_REVERB_HOST  ?? 'infra-pulse.test',
       reverbPort:  process.env.NUXT_PUBLIC_REVERB_PORT  ?? '8080',
       reverbKey:   process.env.NUXT_PUBLIC_REVERB_KEY   ?? 'fdv4cq1ogvk6x7sfw4f1',

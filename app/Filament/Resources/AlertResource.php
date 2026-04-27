@@ -9,6 +9,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 
 class AlertResource extends Resource
 {
@@ -103,23 +108,23 @@ class AlertResource extends Resource
                     ->falseLabel('Unread'),
             ])
             ->actions([
-                Tables\Actions\Action::make('markRead')
+                Action::make('markRead')
                     ->label('Mark Read')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn (Alert $record): bool => ! $record->is_read)
                     ->action(fn (Alert $record) => $record->update(['is_read' => true])),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('markAllRead')
+                BulkActionGroup::make([
+                    BulkAction::make('markAllRead')
                         ->label('Mark as read')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_read' => true]))
                         ->deselectRecordsAfterCompletion(),
-                    Tables\Actions\DeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

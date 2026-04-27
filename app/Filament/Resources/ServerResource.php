@@ -9,6 +9,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 
 class ServerResource extends Resource
 {
@@ -95,7 +100,8 @@ class ServerResource extends Resource
                 Tables\Columns\TextColumn::make('latestMetric.cpu_usage')
                     ->label('CPU %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
@@ -105,7 +111,8 @@ class ServerResource extends Resource
                 Tables\Columns\TextColumn::make('latestMetric.memory_usage')
                     ->label('Mem %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
@@ -137,8 +144,8 @@ class ServerResource extends Resource
                     ->label('Active only'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('toggleActive')
+                EditAction::make(),
+                Action::make('toggleActive')
                     ->label(fn (Server $record): string => $record->is_active ? 'Deactivate' : 'Activate')
                     ->icon(fn (Server $record): string => $record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->color(fn (Server $record): string => $record->is_active ? 'danger' : 'success')
@@ -146,8 +153,8 @@ class ServerResource extends Resource
                     ->action(fn (Server $record) => $record->update(['is_active' => ! $record->is_active])),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('name');

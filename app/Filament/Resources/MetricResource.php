@@ -33,7 +33,8 @@ class MetricResource extends Resource
                 Tables\Columns\TextColumn::make('cpu_usage')
                     ->label('CPU %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
@@ -43,7 +44,8 @@ class MetricResource extends Resource
                 Tables\Columns\TextColumn::make('memory_usage')
                     ->label('Mem %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
@@ -53,7 +55,8 @@ class MetricResource extends Resource
                 Tables\Columns\TextColumn::make('disk_usage')
                     ->label('Disk %')
                     ->suffix('%')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
                         $state >= 85 => 'warning',
@@ -61,22 +64,26 @@ class MetricResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('network_in')
                     ->label('Net In (MB/s)')
-                    ->numeric(decimals: 2)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 2))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('network_out')
                     ->label('Net Out (MB/s)')
-                    ->numeric(decimals: 2)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 2))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('request_rate')
                     ->label('Req/s')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('response_time')
                     ->label('Response (ms)')
-                    ->numeric(decimals: 1)
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 1))
                     ->suffix('ms')
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
