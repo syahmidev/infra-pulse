@@ -31,7 +31,7 @@ class GenerateServerMetrics implements ShouldQueue
             $metric = $this->generateMetric($server, $now);
             $this->checkAlerts($server, $metric);
             $this->updateServerStatus($server, $metric);
-            MetricUpdated::dispatch($metric);
+            MetricUpdated::dispatch($metric, $server->status);
         });
     }
 

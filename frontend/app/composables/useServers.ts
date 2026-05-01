@@ -1,3 +1,10 @@
+export interface MetricPoint {
+  t: number
+  cpu: number
+  mem: number
+  disk: number
+}
+
 export interface ServerMetric {
   cpu_usage:     number
   memory_usage:  number
@@ -21,6 +28,13 @@ export interface Server {
   status:      'online' | 'warning' | 'critical' | 'offline'
   is_active:   boolean
   metric:      ServerMetric | null
+  history:     MetricPoint[]
+}
+
+const HISTORY_MAX = 30
+
+function toMetricPoint(m: ServerMetric): MetricPoint {
+  return { t: Date.now(), cpu: m.cpu_usage, mem: m.memory_usage, disk: m.disk_usage }
 }
 
 export function useServers() {
@@ -34,10 +48,13 @@ export function useServers() {
     error.value   = null
     const { authHeaders } = useAuth()
     try {
-      const data = await $fetch<Server[]>(`${config.public.apiUrl}/api/servers`, {
+      const data = await $fetch<Omit<Server, 'history'>[]>(`${config.public.apiUrl}/api/servers`, {
         headers: authHeaders(),
       })
-      servers.value = data
+      servers.value = data.map(s => ({
+        ...s,
+        history: s.metric ? [toMetricPoint(s.metric)] : [],
+      }))
     } catch (e: any) {
       error.value = e?.data?.message ?? 'Failed to load servers'
     } finally {
@@ -48,7 +65,8 @@ export function useServers() {
   function updateServerMetric(serverId: number, metric: ServerMetric) {
     const server = servers.value.find(s => s.id === serverId)
     if (server) {
-      server.metric = metric
+      server.metric  = metric
+      server.history = [...server.history.slice(-(HISTORY_MAX - 1)), toMetricPoint(metric)]
     }
   }
 

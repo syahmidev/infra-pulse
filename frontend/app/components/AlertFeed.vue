@@ -29,16 +29,8 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  alerts: Array<{
-    id: number
-    severity: string
-    message: string
-    type: string
-    triggered_at: string
-    server?: { id: number; name: string }
-  }>
-}>()
+import type { Alert } from '~/composables/useAlerts'
+defineProps<{ alerts: Alert[] }>()
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
@@ -54,7 +46,7 @@ function formatTime(iso: string) {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  max-height: 400px;
+  max-height: 520px;
   overflow: hidden;
 }
 
@@ -62,6 +54,7 @@ function formatTime(iso: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 .feed-title { font-weight: 700; font-size: 0.875rem; color: var(--text); }
 .feed-count {
@@ -78,13 +71,15 @@ function formatTime(iso: string) {
   padding: 0 0.4rem;
 }
 
-.feed-empty { color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 1rem 0; }
+.feed-empty { color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 1rem 0; flex-shrink: 0; }
 
 .feed-list {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .alert-item {
@@ -95,6 +90,7 @@ function formatTime(iso: string) {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  flex-shrink: 0;
 }
 .alert-item--critical { border-left-color: var(--danger); }
 .alert-item--warning  { border-left-color: var(--warning); }

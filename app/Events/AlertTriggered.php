@@ -15,6 +15,11 @@ class AlertTriggered implements ShouldBroadcastNow
 
     public function __construct(public Alert $alert) {}
 
+    public function broadcastAs(): string
+    {
+        return 'AlertTriggered';
+    }
+
     public function broadcastOn(): array
     {
         return [

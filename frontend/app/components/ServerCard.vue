@@ -40,6 +40,8 @@
           <span class="stat-value">{{ server.metric.network_out }} MB/s</span>
         </div>
       </div>
+
+      <MetricSparkline :history="server.history" />
     </template>
 
     <div v-else class="no-metric">

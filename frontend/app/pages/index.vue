@@ -34,45 +34,78 @@
       </div>
 
       <aside class="sidebar">
-        <AlertFeed :alerts="liveAlerts" />
+        <AlertFeed :alerts="alerts" />
       </aside>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Alert } from '~/composables/useAlerts'
+
 definePageMeta({ middleware: 'auth' })
 
 const { servers, loading, error, fetchServers, updateServerMetric, updateServerStatus } = useServers()
 const { initEcho, subscribeToServer, subscribeToAlerts } = useEcho()
+const { fetchUnread } = useAlerts()
 
-const liveAlerts = ref<any[]>([])
+const alerts = ref<Alert[]>([])
 
 const activeServers = computed(() => servers.value.filter(s => s.is_active).length)
 function statusCount(status: string) {
   return servers.value.filter(s => s.status === status).length
 }
 
+function prependAlert(alert: Alert) {
+  alerts.value = [alert, ...alerts.value].slice(0, 30)
+}
+
 onMounted(async () => {
   await fetchServers()
+  alerts.value = await fetchUnread()
+
   initEcho()
 
   for (const server of servers.value) {
     subscribeToServer(
       server.id,
       (data: any) => {
-        updateServerMetric(server.id, data.metric)
+        updateServerMetric(server.id, {
+          cpu_usage:     data.cpu_usage,
+          memory_usage:  data.memory_usage,
+          memory_used:   data.memory_used,
+          memory_total:  data.memory_total,
+          disk_usage:    data.disk_usage,
+          disk_used:     data.disk_used,
+          disk_total:    data.disk_total,
+          network_in:    data.network_in,
+          network_out:   data.network_out,
+          request_rate:  data.request_rate,
+          response_time: data.response_time,
+        })
         updateServerStatus(server.id, data.status)
       },
-      (data: any) => {
-        liveAlerts.value = [data.alert, ...liveAlerts.value].slice(0, 20)
-      },
+      (data: any) => prependAlert({
+        id:           data.id,
+        severity:     data.severity,
+        message:      data.message,
+        type:         data.type,
+        triggered_at: data.triggered_at,
+        is_read:      false,
+        server:       { id: data.server_id, name: data.server_name },
+      }),
     )
   }
 
-  subscribeToAlerts((data: any) => {
-    liveAlerts.value = [data.alert, ...liveAlerts.value].slice(0, 20)
-  })
+  subscribeToAlerts((data: any) => prependAlert({
+    id:           data.id,
+    severity:     data.severity,
+    message:      data.message,
+    type:         data.type,
+    triggered_at: data.triggered_at,
+    is_read:      false,
+    server:       { id: data.server_id, name: data.server_name },
+  }))
 })
 
 onUnmounted(() => {

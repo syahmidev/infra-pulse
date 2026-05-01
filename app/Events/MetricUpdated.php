@@ -13,7 +13,15 @@ class MetricUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Metric $metric) {}
+    public function __construct(
+        public Metric $metric,
+        public string $status = 'online',
+    ) {}
+
+    public function broadcastAs(): string
+    {
+        return 'MetricUpdated';
+    }
 
     public function broadcastOn(): array
     {
@@ -26,6 +34,7 @@ class MetricUpdated implements ShouldBroadcastNow
     {
         return [
             'server_id'     => $this->metric->server_id,
+            'status'        => $this->status,
             'cpu_usage'     => $this->metric->cpu_usage,
             'memory_usage'  => $this->metric->memory_usage,
             'memory_used'   => $this->metric->memory_used,

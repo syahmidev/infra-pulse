@@ -1,21 +1,20 @@
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
 
-let echoInstance: Echo<'pusher'> | null = null
+let echoInstance: InstanceType<typeof Echo> | null = null
 const echoConnected = ref(false)
 
 export function useEcho() {
+  const config    = useRuntimeConfig()
+  const authToken = useCookie('auth_token')
+
   function initEcho() {
     if (!import.meta.client || echoInstance) return
 
-    const config = useRuntimeConfig()
-    const token  = useCookie('auth_token').value
-
-    // @ts-ignore — pusher-js needs window.Pusher
     window.Pusher = Pusher
 
     echoInstance = new Echo({
-      broadcaster:       'pusher',
+      broadcaster:       'reverb',
       key:               config.public.reverbKey,
       wsHost:            config.public.reverbHost,
       wsPort:            Number(config.public.reverbPort),
@@ -26,21 +25,17 @@ export function useEcho() {
       authEndpoint:      `${config.public.apiUrl}/broadcasting/auth`,
       auth: {
         headers: {
-          'Authorization':    token ? `Bearer ${token}` : '',
+          'Authorization':    authToken.value ? `Bearer ${authToken.value}` : '',
           'X-Requested-With': 'XMLHttpRequest',
         },
       },
     })
 
-    echoInstance.connector.pusher.connection.bind('connected', () => {
-      echoConnected.value = true
-    })
-    echoInstance.connector.pusher.connection.bind('disconnected', () => {
-      echoConnected.value = false
-    })
-    echoInstance.connector.pusher.connection.bind('failed', () => {
-      echoConnected.value = false
-    })
+    const conn = (echoInstance.connector as any).pusher.connection
+    conn.bind('connected',    () => { echoConnected.value = true })
+    conn.bind('disconnected', () => { echoConnected.value = false })
+    conn.bind('failed',       () => { echoConnected.value = false })
+    conn.bind('unavailable',  () => { echoConnected.value = false })
   }
 
   function subscribeToServer(
