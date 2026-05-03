@@ -1,59 +1,110 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Infra Pulse
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Real-time server infrastructure monitoring dashboard. Built as a portfolio project to demonstrate WebSockets done properly in a Laravel + Nuxt stack.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Live metric streaming** — CPU, memory, disk, network, request rate, and response time update every ~3 seconds via WebSockets (Laravel Reverb + Laravel Echo)
+- **Server status tracking** — cards transition between Online / Warning / Critical states automatically based on thresholds
+- **Live alert feed** — warnings and critical alerts appear in real time with slide-in transitions
+- **Sparkline charts** — 30-point rolling history per server rendered with ApexCharts
+- **Filament admin panel** — manage servers, view historical metrics, mark alerts read
+- **Token-based auth** — Sanctum personal access tokens, Bearer header on every API call
+- **Multi-environment** — production, staging, and development servers with distinct badge styling
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 12 |
+| Admin Panel | Filament v5 |
+| WebSockets | Laravel Reverb v1.10 |
+| Frontend | Nuxt 4 + Vue 3 + TypeScript |
+| Charts | ApexCharts (vue3-apexcharts) |
+| Auth | Laravel Sanctum (token mode) |
+| Database | PostgreSQL (via Herd) |
+| Runtime | Bun (frontend), PHP 8.3 (backend) |
 
-## Learning Laravel
+## Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Prerequisites
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.3+, Composer
+- Bun
+- Laravel Herd (or a local PostgreSQL instance)
 
-## Laravel Sponsors
+### Backend
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
 
-### Premium Partners
+# Configure .env:
+# DB_CONNECTION=pgsql
+# DB_DATABASE=infra-pulse
+# APP_NAME="Infra Pulse"
+# REVERB_HOST=localhost
+# REVERB_PORT=8080
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+php artisan migrate
+php artisan db:seed
+```
 
-## Contributing
+### Frontend
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cd frontend
+bun install
+cp .env.example .env
+# Set NUXT_PUBLIC_API_URL=https://infra-pulse.test
+# Set NUXT_PUBLIC_REVERB_HOST=localhost
+```
 
-## Code of Conduct
+### Run
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Terminal 1 — WebSocket server
+php artisan reverb:start
 
-## Security Vulnerabilities
+# Terminal 2 — Metric generator (loops every 3s)
+php artisan metrics:generate --loop
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Terminal 3 — Frontend dev server
+cd frontend && bun dev
+```
 
-## License
+- **Frontend**: http://localhost:3001
+- **Admin panel**: https://infra-pulse.test/admin
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Demo credentials**: `admin@infrapulse.local` / `password`
+
+## Demo Servers
+
+| Server | Environment | Profile |
+|---|---|---|
+| web-01 | production | Stable web traffic, moderate CPU |
+| web-02 | production | Lighter load, secondary node |
+| db-01 | production | High memory, elevated disk (76%) |
+| cache-01 | staging | Low CPU, high request rate |
+| worker-01 | production | High CPU baseline — frequently hits Warning |
+| api-dev | development | Erratic CPU spikes — simulates dev instability |
+
+## Alert Thresholds
+
+| Metric | Warning | Critical |
+|---|---|---|
+| CPU | ≥ 75% | ≥ 90% |
+| Memory | — | ≥ 90% |
+| Disk | ≥ 85% | — |
+| Response Time | ≥ 1000ms | — |
+
+Alerts are throttled — the same alert type per server fires at most once per 5 minutes.
+
+## Architecture Notes
+
+- **No SSR on dashboard** — `ssr: false` in `nuxt.config.ts` because Node.js doesn't trust Herd's self-signed SSL cert; server-side `fetchUser()` fails and redirects to login on every refresh
+- **Reverb host must be `localhost`** — Reverb validates the WebSocket `Host` header; custom `.test` domains are rejected
+- **Token auth, not cookie/SPA** — cross-origin between `localhost:3001` and `infra-pulse.test` means session cookies don't work
+- **`Broadcast::routes` with `auth:sanctum`** — must be registered manually in `bootstrap/app.php`; the default `withRouting(channels:)` uses `web` middleware (session-based), which rejects Bearer tokens with 403
+- **`broadcastAs()` required** — without it Laravel broadcasts `App\Events\ClassName`; Echo's `.EventName` listener only matches the short name and events are silently dropped

@@ -6,18 +6,33 @@
         <span class="card-host">{{ server.ip_address }}</span>
       </div>
       <div class="card-badges">
-        <span :class="['badge', `badge-${server.environment === 'development' ? 'dev' : server.environment}`]">
-          {{ server.environment }}
-        </span>
+        <span :class="['badge', envBadgeClass]">{{ server.environment }}</span>
         <span :class="['badge', `badge-${server.status}`]">{{ server.status }}</span>
       </div>
     </div>
 
     <template v-if="server.metric">
       <div class="metrics-grid">
-        <MeterBar label="CPU" :value="server.metric.cpu_usage" :warnAt="75" :dangerAt="90" />
-        <MeterBar label="Memory" :value="server.metric.memory_usage" :warnAt="75" :dangerAt="90" />
-        <MeterBar label="Disk" :value="server.metric.disk_usage" :warnAt="85" :dangerAt="95" />
+        <MeterBar
+          label="CPU"
+          :value="server.metric.cpu_usage"
+          :warnAt="75"
+          :dangerAt="90"
+        />
+        <MeterBar
+          label="Memory"
+          :value="server.metric.memory_usage"
+          :detail="memDetail"
+          :warnAt="75"
+          :dangerAt="90"
+        />
+        <MeterBar
+          label="Disk"
+          :value="server.metric.disk_usage"
+          :detail="diskDetail"
+          :warnAt="85"
+          :dangerAt="95"
+        />
       </div>
 
       <div class="card-footer">
@@ -33,15 +48,19 @@
         </div>
         <div class="footer-stat">
           <span class="stat-label">Net In</span>
-          <span class="stat-value">{{ server.metric.network_in }} MB/s</span>
+          <span class="stat-value">{{ fmtBytes(server.metric.network_in) }}</span>
         </div>
         <div class="footer-stat">
           <span class="stat-label">Net Out</span>
-          <span class="stat-value">{{ server.metric.network_out }} MB/s</span>
+          <span class="stat-value">{{ fmtBytes(server.metric.network_out) }}</span>
         </div>
       </div>
 
       <MetricSparkline :history="server.history" />
+
+      <div v-if="server.updatedAt" class="card-updated">
+        updated {{ formatUpdated(server.updatedAt) }}
+      </div>
     </template>
 
     <div v-else class="no-metric">
@@ -52,7 +71,46 @@
 
 <script setup lang="ts">
 import type { Server } from '~/composables/useServers'
-defineProps<{ server: Server }>()
+
+const props = defineProps<{ server: Server }>()
+
+const envBadgeClass = computed(() => {
+  const map: Record<string, string> = {
+    production:  'badge-prod',
+    staging:     'badge-staging',
+    development: 'badge-dev',
+  }
+  return map[props.server.environment] ?? 'badge-offline'
+})
+
+function fmtBytes(bytes: number): string {
+  if (bytes >= 1_048_576) return `${(bytes / 1_048_576).toFixed(1)} MB/s`
+  if (bytes >= 1_024)    return `${(bytes / 1_024).toFixed(0)} KB/s`
+  return `${Math.round(bytes)} B/s`
+}
+
+function fmtGB(bytes: number): string {
+  return (bytes / (1024 ** 3)).toFixed(1)
+}
+
+const memDetail = computed(() => {
+  const m = props.server.metric
+  if (!m) return undefined
+  return `${fmtGB(m.memory_used)} / ${fmtGB(m.memory_total)} GB`
+})
+
+const diskDetail = computed(() => {
+  const m = props.server.metric
+  if (!m) return undefined
+  const usedGB  = m.disk_used / (1024 ** 3)
+  const totalGB = m.disk_total / (1024 ** 3)
+  if (totalGB >= 1000) return `${(usedGB / 1000).toFixed(1)} / ${(totalGB / 1000).toFixed(1)} TB`
+  return `${usedGB.toFixed(0)} / ${totalGB.toFixed(0)} GB`
+})
+
+function formatUpdated(ts: number): string {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+}
 </script>
 
 <style scoped>
@@ -91,6 +149,13 @@ defineProps<{ server: Server }>()
   padding-top: 0.75rem;
 }
 .footer-stat { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.card-updated {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin-top: -0.25rem;
+}
 
 .no-metric { color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1rem 0; }
 </style>

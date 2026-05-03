@@ -2,7 +2,10 @@
   <div>
     <div class="stat-row">
       <span class="stat-label">{{ label }}</span>
-      <span class="stat-value" :style="{ color: color }">{{ value }}%</span>
+      <div class="stat-right">
+        <span v-if="detail" class="stat-detail">{{ detail }}</span>
+        <span class="stat-value" :style="{ color: color }">{{ value }}%</span>
+      </div>
     </div>
     <div class="meter-bar">
       <div class="meter-fill" :class="fillClass" :style="{ width: `${Math.min(value, 100)}%` }" />
@@ -14,6 +17,7 @@
 const props = defineProps<{
   label: string
   value: number
+  detail?: string
   warnAt?:  number
   dangerAt?: number
 }>()
@@ -33,3 +37,16 @@ const color = computed(() => {
   return 'var(--success)'
 })
 </script>
+
+<style scoped>
+.stat-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.stat-detail {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+</style>

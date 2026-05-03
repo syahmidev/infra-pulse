@@ -29,6 +29,7 @@ export interface Server {
   is_active:   boolean
   metric:      ServerMetric | null
   history:     MetricPoint[]
+  updatedAt:   number | null
 }
 
 const HISTORY_MAX = 30
@@ -53,7 +54,8 @@ export function useServers() {
       })
       servers.value = data.map(s => ({
         ...s,
-        history: s.metric ? [toMetricPoint(s.metric)] : [],
+        history:   s.metric ? [toMetricPoint(s.metric)] : [],
+        updatedAt: s.metric ? Date.now() : null,
       }))
     } catch (e: any) {
       error.value = e?.data?.message ?? 'Failed to load servers'
@@ -65,8 +67,9 @@ export function useServers() {
   function updateServerMetric(serverId: number, metric: ServerMetric) {
     const server = servers.value.find(s => s.id === serverId)
     if (server) {
-      server.metric  = metric
-      server.history = [...server.history.slice(-(HISTORY_MAX - 1)), toMetricPoint(metric)]
+      server.metric    = metric
+      server.history   = [...server.history.slice(-(HISTORY_MAX - 1)), toMetricPoint(metric)]
+      server.updatedAt = Date.now()
     }
   }
 

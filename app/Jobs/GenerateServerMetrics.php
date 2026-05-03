@@ -16,11 +16,12 @@ class GenerateServerMetrics implements ShouldQueue
     use Queueable;
 
     private array $profiles = [
-        'web-01'    => ['cpu_base' => 45, 'mem_gb' => 8,  'disk_gb' => 100, 'req_rate' => 120],
-        'web-02'    => ['cpu_base' => 35, 'mem_gb' => 8,  'disk_gb' => 100, 'req_rate' => 95],
-        'db-01'     => ['cpu_base' => 60, 'mem_gb' => 32, 'disk_gb' => 500, 'req_rate' => 40],
-        'cache-01'  => ['cpu_base' => 20, 'mem_gb' => 16, 'disk_gb' => 50,  'req_rate' => 200],
-        'worker-01' => ['cpu_base' => 70, 'mem_gb' => 4,  'disk_gb' => 80,  'req_rate' => 0],
+        'web-01'    => ['cpu_base' => 45, 'mem_gb' => 8,  'disk_gb' => 100, 'req_rate' => 120, 'cpu_swing' => 20, 'disk_pct_base' => 52],
+        'web-02'    => ['cpu_base' => 35, 'mem_gb' => 8,  'disk_gb' => 100, 'req_rate' => 95,  'cpu_swing' => 15, 'disk_pct_base' => 48],
+        'db-01'     => ['cpu_base' => 58, 'mem_gb' => 32, 'disk_gb' => 500, 'req_rate' => 40,  'cpu_swing' => 18, 'disk_pct_base' => 76],
+        'cache-01'  => ['cpu_base' => 18, 'mem_gb' => 16, 'disk_gb' => 50,  'req_rate' => 200, 'cpu_swing' => 8,  'disk_pct_base' => 38],
+        'worker-01' => ['cpu_base' => 76, 'mem_gb' => 4,  'disk_gb' => 80,  'req_rate' => 0,   'cpu_swing' => 18, 'disk_pct_base' => 82],
+        'api-dev'   => ['cpu_base' => 25, 'mem_gb' => 4,  'disk_gb' => 50,  'req_rate' => 15,  'cpu_swing' => 30, 'disk_pct_base' => 41],
     ];
 
     public function handle(): void
@@ -38,20 +39,20 @@ class GenerateServerMetrics implements ShouldQueue
     private function generateMetric(Server $server, Carbon $now): Metric
     {
         $profile = $this->profiles[$server->name] ?? [
-            'cpu_base' => 40, 'mem_gb' => 8, 'disk_gb' => 100, 'req_rate' => 50,
+            'cpu_base' => 40, 'mem_gb' => 8, 'disk_gb' => 100, 'req_rate' => 50, 'cpu_swing' => 20, 'disk_pct_base' => 55,
         ];
 
         $gb = 1024 * 1024 * 1024;
         $timeAngle = ($now->timestamp % 3600) / 3600 * 2 * M_PI;
 
-        $cpu = max(0.0, min(100.0, $profile['cpu_base'] + sin($timeAngle) * 20 + rand(-5, 5)));
+        $cpu = max(0.0, min(100.0, $profile['cpu_base'] + sin($timeAngle) * $profile['cpu_swing'] + rand(-5, 5)));
 
         $memTotal = $profile['mem_gb'] * $gb;
         $memPct   = max(20.0, min(95.0, 65 + sin($timeAngle * 0.7) * 15 + rand(-3, 3)));
         $memUsed  = (int) ($memTotal * $memPct / 100);
 
         $diskTotal = $profile['disk_gb'] * $gb;
-        $diskPct   = max(30.0, min(95.0, 55 + rand(-1, 1)));
+        $diskPct   = max(30.0, min(95.0, $profile['disk_pct_base'] + rand(-2, 2)));
         $diskUsed  = (int) ($diskTotal * $diskPct / 100);
 
         $networkIn  = max(0.0, $profile['req_rate'] * 2000 + rand(-50000, 50000));
