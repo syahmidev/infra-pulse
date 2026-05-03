@@ -1,15 +1,15 @@
 <template>
-  <div class="login-shell">
-    <div class="login-card">
-      <div class="login-brand">
-        <div class="login-dot" />
+  <div class="min-h-screen bg-surface flex items-center justify-center p-4">
+    <div class="bg-card border border-border rounded-2xl p-10 w-full max-w-sm">
+      <div class="flex items-center gap-2.5 text-xl font-bold text-fore mb-1">
+        <div class="w-3 h-3 rounded-full bg-accent shadow-[0_0_10px_var(--color-accent)]" />
         <span>Infra Pulse</span>
       </div>
-      <p class="login-sub">Real-time infrastructure monitoring</p>
+      <p class="text-sm text-muted mb-8">Real-time infrastructure monitoring</p>
 
-      <form class="login-form" @submit.prevent="submit">
-        <div class="field">
-          <label for="email">Email</label>
+      <form class="flex flex-col gap-4" @submit.prevent="submit">
+        <div class="flex flex-col gap-1.5">
+          <label for="email" class="text-xs font-medium text-muted">Email</label>
           <input
             id="email"
             v-model="form.email"
@@ -17,10 +17,11 @@
             autocomplete="email"
             placeholder="admin@infrapulse.local"
             required
+            class="bg-surface border border-border rounded-lg px-3.5 py-2.5 text-fore text-sm outline-none focus:border-accent transition-colors"
           />
         </div>
-        <div class="field">
-          <label for="password">Password</label>
+        <div class="flex flex-col gap-1.5">
+          <label for="password" class="text-xs font-medium text-muted">Password</label>
           <input
             id="password"
             v-model="form.password"
@@ -28,12 +29,19 @@
             autocomplete="current-password"
             placeholder="••••••••"
             required
+            class="bg-surface border border-border rounded-lg px-3.5 py-2.5 text-fore text-sm outline-none focus:border-accent transition-colors"
           />
         </div>
 
-        <p v-if="errorMsg" class="login-error">{{ errorMsg }}</p>
+        <p v-if="errorMsg" class="text-xs text-danger bg-danger/10 rounded-md px-3 py-2">
+          {{ errorMsg }}
+        </p>
 
-        <button type="submit" class="btn btn-primary login-btn" :disabled="loading">
+        <button
+          type="submit"
+          class="btn btn-primary w-full justify-center py-2.5 text-[0.95rem] disabled:opacity-60 disabled:cursor-not-allowed"
+          :disabled="loading"
+        >
           <span v-if="loading">Signing in…</span>
           <span v-else>Sign In</span>
         </button>
@@ -65,67 +73,3 @@ async function submit() {
   }
 }
 </script>
-
-<style scoped>
-.login-shell {
-  min-height: 100vh;
-  background: var(--bg-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.login-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 2.5rem;
-  width: 100%;
-  max-width: 400px;
-}
-
-.login-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.25rem;
-}
-.login-dot {
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
-}
-.login-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; }
-
-.login-form { display: flex; flex-direction: column; gap: 1rem; }
-
-.field { display: flex; flex-direction: column; gap: 0.375rem; }
-.field label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
-.field input {
-  background: var(--bg-base);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.625rem 0.875rem;
-  color: var(--text);
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.15s;
-}
-.field input:focus { border-color: var(--accent); }
-
-.login-error {
-  font-size: 0.8rem;
-  color: var(--danger);
-  background: rgba(239,68,68,0.1);
-  border-radius: 0.4rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.login-btn { width: 100%; justify-content: center; padding: 0.7rem; font-size: 0.95rem; }
-.login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-</style>

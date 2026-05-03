@@ -1,6 +1,6 @@
 <template>
-  <div class="sparkline-wrap">
-    <div v-if="history.length < 2" class="sparkline-empty">
+  <div class="mt-1 border-t border-border pt-2">
+    <div v-if="history.length < 2" class="h-[150px] flex items-center justify-center text-xs text-muted">
       Waiting for data…
     </div>
     <ClientOnly v-else>
@@ -87,20 +87,3 @@ const chartOptions = {
   },
 }
 </script>
-
-<style scoped>
-.sparkline-wrap {
-  margin-top: 0.25rem;
-  border-top: 1px solid var(--border);
-  padding-top: 0.5rem;
-}
-
-.sparkline-empty {
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-</style>

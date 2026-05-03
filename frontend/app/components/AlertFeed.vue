@@ -1,28 +1,29 @@
 <template>
-  <div class="alert-feed">
-    <div class="feed-header">
-      <span class="feed-title">Live Alerts</span>
-      <span v-if="alerts.length" class="feed-count">{{ alerts.length }}</span>
+  <div class="bg-card border border-border rounded-xl p-4 flex flex-col gap-3 max-h-[520px] overflow-hidden">
+    <div class="flex items-center justify-between shrink-0">
+      <span class="font-bold text-sm text-fore">Live Alerts</span>
+      <span
+        v-if="alerts.length"
+        class="bg-danger text-white rounded-full text-[0.7rem] font-bold min-w-5 h-5 flex items-center justify-center px-1.5"
+      >{{ alerts.length }}</span>
     </div>
 
-    <div class="feed-empty" v-if="!alerts.length">
-      <span>All clear — no active alerts</span>
+    <div v-if="!alerts.length" class="text-muted text-xs text-center py-4 shrink-0">
+      All clear — no active alerts
     </div>
 
-    <TransitionGroup name="alert" tag="div" class="feed-list">
+    <TransitionGroup name="alert" tag="div" class="flex flex-col gap-2 overflow-y-auto flex-1 min-h-0">
       <div
         v-for="alert in alerts"
         :key="alert.id"
-        :class="['alert-item', `alert-item--${alert.severity}`]"
+        :class="['bg-card2 rounded-lg px-3 py-2.5 flex flex-col gap-1.5 shrink-0 border-l-[3px]', alertBorderClass(alert.severity)]"
       >
-        <div class="alert-top">
-          <span :class="['badge', `badge-${alert.severity === 'critical' ? 'critical' : alert.severity === 'warning' ? 'warning' : 'info'}`]">
-            {{ alert.severity }}
-          </span>
-          <span class="alert-server">{{ alert.server?.name ?? 'Unknown' }}</span>
-          <span class="alert-time">{{ formatTime(alert.triggered_at) }}</span>
+        <div class="flex items-center gap-2">
+          <span :class="['badge', alertBadgeClass(alert.severity)]">{{ alert.severity }}</span>
+          <span class="text-xs font-semibold text-fore flex-1">{{ alert.server?.name ?? 'Unknown' }}</span>
+          <span class="text-[0.7rem] text-muted">{{ formatTime(alert.triggered_at) }}</span>
         </div>
-        <p class="alert-msg">{{ alert.message }}</p>
+        <p class="text-xs text-muted">{{ alert.message }}</p>
       </div>
     </TransitionGroup>
   </div>
@@ -35,76 +36,21 @@ defineProps<{ alerts: Alert[] }>()
 function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
+
+function alertBorderClass(severity: string): string {
+  if (severity === 'critical') return 'border-l-danger'
+  if (severity === 'warning')  return 'border-l-warning'
+  return 'border-l-info'
+}
+
+function alertBadgeClass(severity: string): string {
+  if (severity === 'critical') return 'badge-critical'
+  if (severity === 'warning')  return 'badge-warning'
+  return 'badge-info'
+}
 </script>
 
 <style scoped>
-.alert-feed {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-height: 520px;
-  overflow: hidden;
-}
-
-.feed-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-.feed-title { font-weight: 700; font-size: 0.875rem; color: var(--text); }
-.feed-count {
-  background: var(--danger);
-  color: #fff;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  min-width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.4rem;
-}
-
-.feed-empty { color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 1rem 0; flex-shrink: 0; }
-
-.feed-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-}
-
-.alert-item {
-  background: var(--bg-card-2);
-  border-left: 3px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.625rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
-.alert-item--critical { border-left-color: var(--danger); }
-.alert-item--warning  { border-left-color: var(--warning); }
-.alert-item--info     { border-left-color: var(--info); }
-
-.alert-top {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.alert-server { font-size: 0.8rem; font-weight: 600; color: var(--text); flex: 1; }
-.alert-time   { font-size: 0.7rem; color: var(--text-muted); }
-.alert-msg    { font-size: 0.8rem; color: var(--text-muted); }
-
 .alert-enter-active { transition: all 0.3s ease; }
 .alert-enter-from   { opacity: 0; transform: translateY(-8px); }
 </style>

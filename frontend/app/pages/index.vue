@@ -1,39 +1,40 @@
 <template>
   <div>
-    <div class="page-header">
+    <div class="flex items-start justify-between mb-6 flex-wrap gap-4">
       <div>
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-sub">{{ activeServers }} active server{{ activeServers !== 1 ? 's' : '' }} · updated live</p>
+        <h1 class="text-2xl font-extrabold text-fore">Dashboard</h1>
+        <p class="text-xs text-muted mt-0.5">
+          {{ activeServers }} active server{{ activeServers !== 1 ? 's' : '' }} · updated live
+        </p>
       </div>
-      <div class="header-stats">
-        <div class="hstat hstat--online">
-          <span class="hstat-num">{{ statusCount('online') }}</span>
-          <span class="hstat-label">Online</span>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center bg-card border border-border rounded-xl px-4 py-2 min-w-[64px]">
+          <span class="text-xl font-extrabold text-success">{{ statusCount('online') }}</span>
+          <span class="text-[10px] uppercase tracking-widest text-muted">Online</span>
         </div>
-        <div class="hstat hstat--warning">
-          <span class="hstat-num">{{ statusCount('warning') }}</span>
-          <span class="hstat-label">Warning</span>
+        <div class="flex flex-col items-center bg-card border border-border rounded-xl px-4 py-2 min-w-[64px]">
+          <span class="text-xl font-extrabold text-warning">{{ statusCount('warning') }}</span>
+          <span class="text-[10px] uppercase tracking-widest text-muted">Warning</span>
         </div>
-        <div class="hstat hstat--critical">
-          <span class="hstat-num">{{ statusCount('critical') }}</span>
-          <span class="hstat-label">Critical</span>
+        <div class="flex flex-col items-center bg-card border border-border rounded-xl px-4 py-2 min-w-[64px]">
+          <span class="text-xl font-extrabold text-danger">{{ statusCount('critical') }}</span>
+          <span class="text-[10px] uppercase tracking-widest text-muted">Critical</span>
         </div>
       </div>
     </div>
 
-    <div v-if="loading" class="loading-state">Loading servers…</div>
-    <div v-else-if="error" class="error-state">{{ error }}</div>
+    <div v-if="loading" class="text-center py-16 text-muted text-sm">Loading servers…</div>
+    <div v-else-if="error" class="text-center py-16 text-danger text-sm">{{ error }}</div>
 
-    <div v-else class="dashboard-layout">
-      <div class="servers-grid">
+    <div v-else class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 items-start">
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
         <ServerCard
           v-for="server in servers"
           :key="server.id"
           :server="server"
         />
       </div>
-
-      <aside class="sidebar">
+      <aside class="lg:sticky lg:top-[72px]">
         <AlertFeed :alerts="alerts" />
       </aside>
     </div>
@@ -114,63 +115,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style scoped>
-.page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.page-title { font-size: 1.5rem; font-weight: 800; color: var(--text); }
-.page-sub   { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
-
-.header-stats { display: flex; gap: 0.75rem; }
-.hstat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.6rem;
-  padding: 0.5rem 1rem;
-  min-width: 64px;
-}
-.hstat-num   { font-size: 1.25rem; font-weight: 800; }
-.hstat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
-.hstat--online   .hstat-num { color: var(--success); }
-.hstat--warning  .hstat-num { color: var(--warning); }
-.hstat--critical .hstat-num { color: var(--danger); }
-
-.loading-state, .error-state {
-  text-align: center;
-  padding: 4rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-.error-state { color: var(--danger); }
-
-.dashboard-layout {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 1.25rem;
-  align-items: start;
-}
-
-.servers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
-}
-
-.sidebar { position: sticky; top: 72px; }
-
-@media (max-width: 900px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr;
-  }
-  .sidebar { position: static; }
-}
-</style>
