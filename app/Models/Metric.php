@@ -23,12 +23,12 @@ class Metric extends Model
     ];
 
     protected $casts = [
-        'cpu_usage'     => 'float',
-        'memory_usage'  => 'float',
-        'disk_usage'    => 'float',
-        'network_in'    => 'float',
-        'network_out'   => 'float',
-        'request_rate'  => 'float',
+        'cpu_usage' => 'float',
+        'memory_usage' => 'float',
+        'disk_usage' => 'float',
+        'network_in' => 'float',
+        'network_out' => 'float',
+        'request_rate' => 'float',
         'response_time' => 'float',
     ];
 

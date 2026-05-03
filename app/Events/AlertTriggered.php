@@ -31,12 +31,12 @@ class AlertTriggered implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'id'           => $this->alert->id,
-            'server_id'    => $this->alert->server_id,
-            'server_name'  => $this->alert->server->name,
-            'type'         => $this->alert->type,
-            'message'      => $this->alert->message,
-            'severity'     => $this->alert->severity,
+            'id' => $this->alert->id,
+            'server_id' => $this->alert->server_id,
+            'server_name' => $this->alert->server->name,
+            'type' => $this->alert->type,
+            'message' => $this->alert->message,
+            'severity' => $this->alert->severity,
             'triggered_at' => $this->alert->triggered_at,
         ];
     }

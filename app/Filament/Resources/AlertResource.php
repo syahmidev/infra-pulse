@@ -4,22 +4,25 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AlertResource\Pages;
 use App\Models\Alert;
-use Filament\Forms;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class AlertResource extends Resource
 {
     protected static ?string $model = Alert::class;
+
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-bell-alert';
+
     protected static \UnitEnum|string|null $navigationGroup = 'Infrastructure';
+
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationBadge(): ?string
@@ -42,8 +45,8 @@ class AlertResource extends Resource
                 ->required(),
             Forms\Components\Select::make('severity')
                 ->options([
-                    'info'     => 'Info',
-                    'warning'  => 'Warning',
+                    'info' => 'Info',
+                    'warning' => 'Warning',
                     'critical' => 'Critical',
                 ])
                 ->required(),
@@ -73,9 +76,9 @@ class AlertResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'critical' => 'danger',
-                        'warning'  => 'warning',
-                        'info'     => 'info',
-                        default    => 'gray',
+                        'warning' => 'warning',
+                        'info' => 'info',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
@@ -97,8 +100,8 @@ class AlertResource extends Resource
                 Tables\Filters\SelectFilter::make('severity')
                     ->options([
                         'critical' => 'Critical',
-                        'warning'  => 'Warning',
-                        'info'     => 'Info',
+                        'warning' => 'Warning',
+                        'info' => 'Info',
                     ]),
                 Tables\Filters\SelectFilter::make('server')
                     ->relationship('server', 'name'),
@@ -137,9 +140,9 @@ class AlertResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListAlerts::route('/'),
+            'index' => Pages\ListAlerts::route('/'),
             'create' => Pages\CreateAlert::route('/create'),
-            'edit'   => Pages\EditAlert::route('/{record}/edit'),
+            'edit' => Pages\EditAlert::route('/{record}/edit'),
         ];
     }
 }

@@ -10,7 +10,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name'  => 'crytex',
+            'name' => 'crytex',
             'email' => 'admin@infrapulse.local',
         ]);
 

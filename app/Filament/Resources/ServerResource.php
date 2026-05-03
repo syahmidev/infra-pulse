@@ -4,23 +4,25 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ServerResource\Pages;
 use App\Models\Server;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Actions\EditAction;
-use Filament\Actions\Action;
-use Filament\Actions\BulkAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Schemas\Components\Section;
 
 class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
+
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-server';
+
     protected static \UnitEnum|string|null $navigationGroup = 'Infrastructure';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
@@ -39,8 +41,8 @@ class ServerResource extends Resource
                     ->maxLength(45),
                 Forms\Components\Select::make('environment')
                     ->options([
-                        'production'  => 'Production',
-                        'staging'     => 'Staging',
+                        'production' => 'Production',
+                        'staging' => 'Staging',
                         'development' => 'Development',
                     ])
                     ->required(),
@@ -49,10 +51,10 @@ class ServerResource extends Resource
             Section::make('Status')->schema([
                 Forms\Components\Select::make('status')
                     ->options([
-                        'online'   => 'Online',
-                        'warning'  => 'Warning',
+                        'online' => 'Online',
+                        'warning' => 'Warning',
                         'critical' => 'Critical',
-                        'offline'  => 'Offline',
+                        'offline' => 'Offline',
                     ])
                     ->required()
                     ->default('online'),
@@ -84,19 +86,19 @@ class ServerResource extends Resource
                 Tables\Columns\TextColumn::make('environment')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'production'  => 'danger',
-                        'staging'     => 'warning',
+                        'production' => 'danger',
+                        'staging' => 'warning',
                         'development' => 'success',
-                        default       => 'gray',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'online'   => 'success',
-                        'warning'  => 'warning',
+                        'online' => 'success',
+                        'warning' => 'warning',
                         'critical' => 'danger',
-                        'offline'  => 'gray',
-                        default    => 'gray',
+                        'offline' => 'gray',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('latestMetric.cpu_usage')
                     ->label('CPU %')
@@ -107,7 +109,7 @@ class ServerResource extends Resource
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
-                        default      => 'success',
+                        default => 'success',
                     }),
                 Tables\Columns\TextColumn::make('latestMetric.memory_usage')
                     ->label('Mem %')
@@ -117,7 +119,7 @@ class ServerResource extends Resource
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
-                        default      => 'success',
+                        default => 'success',
                     }),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
@@ -130,15 +132,15 @@ class ServerResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'online'   => 'Online',
-                        'warning'  => 'Warning',
+                        'online' => 'Online',
+                        'warning' => 'Warning',
                         'critical' => 'Critical',
-                        'offline'  => 'Offline',
+                        'offline' => 'Offline',
                     ]),
                 Tables\Filters\SelectFilter::make('environment')
                     ->options([
-                        'production'  => 'Production',
-                        'staging'     => 'Staging',
+                        'production' => 'Production',
+                        'staging' => 'Staging',
                         'development' => 'Development',
                     ]),
                 Tables\Filters\TernaryFilter::make('is_active')
@@ -169,9 +171,9 @@ class ServerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListServers::route('/'),
+            'index' => Pages\ListServers::route('/'),
             'create' => Pages\CreateServer::route('/create'),
-            'edit'   => Pages\EditServer::route('/{record}/edit'),
+            'edit' => Pages\EditServer::route('/{record}/edit'),
         ];
     }
 }

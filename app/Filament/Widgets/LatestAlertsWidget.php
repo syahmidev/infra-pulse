@@ -3,16 +3,19 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Alert;
+use Filament\Actions\Action;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Actions\Action;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestAlertsWidget extends BaseWidget
 {
     protected static ?int $sort = 3;
+
     protected ?string $pollingInterval = '3s';
-    protected int | string | array $columnSpan = 'full';
+
+    protected int|string|array $columnSpan = 'full';
+
     protected static ?string $heading = 'Latest Alerts';
 
     public function table(Table $table): Table
@@ -37,9 +40,9 @@ class LatestAlertsWidget extends BaseWidget
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'critical' => 'danger',
-                        'warning'  => 'warning',
-                        'info'     => 'info',
-                        default    => 'gray',
+                        'warning' => 'warning',
+                        'info' => 'info',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type'),

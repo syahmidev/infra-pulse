@@ -1,6 +1,5 @@
 <?php
 
-use App\Jobs\GenerateServerMetrics;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;

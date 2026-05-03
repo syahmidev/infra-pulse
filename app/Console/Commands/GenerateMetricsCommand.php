@@ -7,7 +7,8 @@ use Illuminate\Console\Command;
 
 class GenerateMetricsCommand extends Command
 {
-    protected $signature   = 'metrics:generate {--loop : Run continuously every 3 seconds}';
+    protected $signature = 'metrics:generate {--loop : Run continuously every 3 seconds}';
+
     protected $description = 'Generate mock server metrics and broadcast via Reverb';
 
     public function handle(): void

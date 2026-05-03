@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MetricResource\Pages;
 use App\Models\Metric;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -12,9 +13,13 @@ use Filament\Tables\Table;
 class MetricResource extends Resource
 {
     protected static ?string $model = Metric::class;
+
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-chart-bar';
+
     protected static \UnitEnum|string|null $navigationGroup = 'Infrastructure';
+
     protected static ?int $navigationSort = 3;
+
     protected static ?string $label = 'Metric History';
 
     public static function form(Schema $schema): Schema
@@ -39,7 +44,7 @@ class MetricResource extends Resource
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
-                        default      => 'success',
+                        default => 'success',
                     }),
                 Tables\Columns\TextColumn::make('memory_usage')
                     ->label('Mem %')
@@ -50,7 +55,7 @@ class MetricResource extends Resource
                     ->color(fn ($state): string => match (true) {
                         $state >= 90 => 'danger',
                         $state >= 75 => 'warning',
-                        default      => 'success',
+                        default => 'success',
                     }),
                 Tables\Columns\TextColumn::make('disk_usage')
                     ->label('Disk %')
@@ -60,7 +65,7 @@ class MetricResource extends Resource
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
                         $state >= 85 => 'warning',
-                        default      => 'success',
+                        default => 'success',
                     }),
                 Tables\Columns\TextColumn::make('network_in')
                     ->label('Net In (MB/s)')
@@ -88,7 +93,7 @@ class MetricResource extends Resource
                     ->sortable()
                     ->color(fn ($state): string => match (true) {
                         $state >= 1000 => 'warning',
-                        default        => 'success',
+                        default => 'success',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Recorded At')
@@ -101,8 +106,8 @@ class MetricResource extends Resource
                     ->relationship('server', 'name'),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
-                        \Filament\Forms\Components\DatePicker::make('from')->label('From'),
-                        \Filament\Forms\Components\DatePicker::make('until')->label('Until'),
+                        DatePicker::make('from')->label('From'),
+                        DatePicker::make('until')->label('Until'),
                     ])
                     ->query(function ($query, array $data) {
                         return $query

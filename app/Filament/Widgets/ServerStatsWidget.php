@@ -10,16 +10,18 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class ServerStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+
     protected ?string $pollingInterval = '3s';
-    protected int | string | array $columnSpan = 'full';
+
+    protected int|string|array $columnSpan = 'full';
 
     protected function getStats(): array
     {
-        $total    = Server::count();
-        $online   = Server::where('status', 'online')->count();
-        $warning  = Server::where('status', 'warning')->count();
+        $total = Server::count();
+        $online = Server::where('status', 'online')->count();
+        $warning = Server::where('status', 'warning')->count();
         $critical = Server::where('status', 'critical')->count();
-        $unread   = Alert::where('is_read', false)->count();
+        $unread = Alert::where('is_read', false)->count();
 
         return [
             Stat::make('Total Servers', $total)

@@ -17,7 +17,7 @@ class Alert extends Model
     ];
 
     protected $casts = [
-        'is_read'      => 'boolean',
+        'is_read' => 'boolean',
         'triggered_at' => 'datetime',
     ];
 
