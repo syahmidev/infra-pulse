@@ -14,6 +14,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Schemas\Components\Section;
 
 class ServerResource extends Resource
 {
@@ -25,7 +26,7 @@ class ServerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
-            Forms\Components\Section::make('Server Details')->schema([
+            Section::make('Server Details')->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -45,7 +46,7 @@ class ServerResource extends Resource
                     ->required(),
             ])->columns(2),
 
-            Forms\Components\Section::make('Status')->schema([
+            Section::make('Status')->schema([
                 Forms\Components\Select::make('status')
                     ->options([
                         'online'   => 'Online',
