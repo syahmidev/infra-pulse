@@ -108,3 +108,19 @@ Alerts are throttled — the same alert type per server fires at most once per 5
 - **Token auth, not cookie/SPA** — cross-origin between `localhost:3001` and `infra-pulse.test` means session cookies don't work
 - **`Broadcast::routes` with `auth:sanctum`** — must be registered manually in `bootstrap/app.php`; the default `withRouting(channels:)` uses `web` middleware (session-based), which rejects Bearer tokens with 403
 - **`broadcastAs()` required** — without it Laravel broadcasts `App\Events\ClassName`; Echo's `.EventName` listener only matches the short name and events are silently dropped
+
+## Screenshot
+
+ ![Dashboard](docs/screenshots/backend-dashboard.png)
+
+ ![Dashboard](docs/screenshots/backend-dashboard2.png)
+
+ ![Servers](docs/screenshots/backend-servers.png)
+
+ ![Alerts](docs/screenshots/backend-alerts.png)
+
+ ![Histories](docs/screenshots/backend-histories.png)
+
+ ![Login](docs/screenshots/frontend-login.png)
+
+ ![Metrics](docs/screenshots/frontend-metrics.png)
